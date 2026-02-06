@@ -1,0 +1,40 @@
+Download Source: Hawaii Climate Data Portal (HCDP) – https://www.hawaii.edu/climate
+data-portal/data-portal/ 
+Files used: Monthly statewide rainfall rasters: rainfall_YYYY_MM.tif (2000–2025)  
+Source Information / Publisher: University of Hawaiʻi at Mānoa – Department of Geography 
+& Environment, Ecohydrology Lab, Water Resources Research Center (WRRC), Hawaiʻi 
+3 
+EPSCoR ʻIke Wai Program 
+Format: GeoTIFF 
+Coverage: Hawaiʻi statewide 
+Temporal Resolution: Monthly 
+Spatial Resolution: ~250 m gridded rainfall prediction 
+CRS: EPSG 4326 (WGS 84) 
+Projected to: EPSG 26904 (NAD83 / UTM Zone 4N) for extraction and WUI analysis
+Overview 
+This dataset represents long-term mean annual rainfall for Hawaiʻi derived from high
+resolution monthly rainfall rasters produced by the Hawaiʻi Climate Data Portal. Monthly 
+rainfall totals were summed to annual totals for each year (2000–2024), then averaged across 
+all years to generate a statewide mean annual rainfall surface. The resulting raster was spatially 
+summarized for each WUI polygon to support wildfire risk and vulnerability analysis. 
+Processing Summary / Workflow 
+1. Load monthly rainfall GeoTIFFs for each year (12 months/year). 
+2. Sum monthly rasters → annual total rainfall per year. 
+3. Stack annual rasters (2000–2024). 
+4. Compute pixel-wise mean → long-term mean annual rainfall. 
+5. Extract mean rainfall values to WUI polygons. 
+6. Join extracted values to WUI attributes and export. 
+Output Products 
+Output 
+Description 
+Mean_Annual_Rainfall_2000_2024.tif Long-term mean annual rainfall (mm), pixel-level 
+4 
+WUI_Rainfall_Results.shp 
+WUI polygons with mean annual rainfall 
+WUI_Rainfall_Summary.csv 
+Per-WUI rainfall summary table 
+Data Quality Notes 
+• Rainfall surfaces are interpolated estimates based on station data and kriging methods. 
+• Spatial uncertainty varies across islands; coastal and high-elevation areas may have 
+higher error. 
+• Long-term averaging smooths interannual variability and extremes.
