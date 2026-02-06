@@ -1,0 +1,71 @@
+Response Variables 
+Purpose: Create a response variable table per WUI, including: 
+• Burn Area (BP_prop) = burned area ÷ WUI area 
+• Fire Frequency (Freq_perYr) = fires per year 
+• Fire Return Interval (FRI_years) = years per fire 
+13 
+All expressed per WUI polygon, ensuring spatial integrity. 
+Inputs: 
+• WUI_Polys (Field: WUI_Riskar (unique ID for each WUI) 
+• fires_1999_2022  
+• Study window: 1999–2022 (24 years) 
+• Projection: EPSG:6933 – Cylindrical Equal Area (areas are in m²) 
+1. Burn Probability  
+(BP_prop = burned area ÷ WUI area) 
+• Dissolve (on fire perimeters) 
+• Intersect (fire polygons × WUI polygons) 
+• Calculate Geometry Attributes (get area m²) 
+• Summary Statistics (Sum BurnArea_m2 by WUI_Riskar) 
+• Add Field + Calculate Field (on WUI layer) 
+Equation (Calculate Field): !SUM_BurnArea_m2! / !WUI_Area_m2! 
+Output field: BP_area 
+2. Fire Frequency  
+(Freq_perYr = fires ÷ years) 
+• Summary Statistics on fire intersections (Count FIRE_UID by WUI_Riskar) 
+• Add Field + Calculate Field 
+Equation (Calculate Field): !COUNT_FIRE_UID! / 24 
+(24 number of study years) 
+Output field: Freq_perYr 
+3. Fire Return Interval 
+(FRI_years = years ÷ fires) 
+• Use the same summary table from Fire Frequency 
+• Add Field + Calculate Field 
+Equation (in Calculate Field): 24 / !COUNT_FIRE_UID! 
+Output field: FRI_years 
+(Set FRI_years = <Null> where COUNT_FIRE_UID = 0) 
+Result: 
+Each WUI polygon has: 
+BP_prop, Freq_perYr, and FRI_years calculated manually — using Add Field → Calculate 
+Field in the attribute table. 
+14 
+Units & Data Integrity 
+Variable 
+Definition 
+Units 
+Notes 
+WUI_Area_m2 
+Total area of WUI 
+polygon 
+m² 
+from projected geometry 
+SUM_BurnArea_m2 Total burned area 
+within WUI 
+m² 
+from intersection 
+BP_prop 
+Burned / WUI area 
+unitless (0–1) 
+proportional 
+COUNT_FIRE_UID Number of distinct 
+fires 
+count 
+0 means no fire 
+Freq_perYr 
+Fires per year 
+count/year 
+FRI_years 
+= COUNT / total_years 
+Years per fire 
+years/fire 
+= total_years / COUNT; NA 
+if COUNT=0 
