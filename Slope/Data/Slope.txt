@@ -1,0 +1,65 @@
+Download Source: U.S. Geological Survey (USGS) 10-m Digital Elevation Model (DEM), 
+accessed through PacIOOS ERDDAP  
+https://data.usgs.gov/datacatalog/data/USGS:6809585bd4be0211235186c3 
+Dataset ID: usgs_dem_10m 
+Format: GeoTIFF / NetCDF (converted to GeoTIFF for analysis) 
+Coverage: Hawaiʻi statewide (island mosaics including Hawaiʻi, Maui Nui, Oʻahu, Kauaʻi) 
+Spatial Resolution: 10 meters (1/3 arc-second) 
+Temporal Resolution: Static (terrain does not vary over time) 
+CRS 
+• Original DEM CRS: EPSG 4326 (WGS84) 
+• Reprojected to analysis CRS: 
+EPSG 26904 — NAD83 / UTM Zone 4N 
+Overview 
+This dataset represents a high-resolution digital elevation model (DEM) developed by the U.S. 
+Geological Survey and distributed via PacIOOS. The DEM provides a foundational terrain 
+surface from which multiple physical landscape metrics can be derived. For wildfire and WUI 
+exposure analysis, the DEM was used to compute slope and surface roughness, two key 
+biophysical variables influencing fire spread, fireline intensity, suppression difficulty, and fuel 
+5 
+continuity patterns in Hawaiʻi. 
+Attributes and Derivative Variables 
+Slope 
+• Computed using: terrain(dem, v="slope", unit="degrees") 
+• Output unit: degrees 
+• Interpretation: 
+Higher slope increases fire rate-of-spread (ROS), flame tilt, and difficulty for ground 
+suppression crews. 
+Roughness 
+• Computed using: terrain(dem, v="roughness") 
+• Output unit: dimensionless (variance of elevation within a 3×3 kernel) 
+• Interpretation: 
+Higher roughness indicates heterogeneous terrain, cliffs, and ridges; lower values 
+indicate smoother, flatter surfaces. 
+Processing Workflow 
+1. Downloaded 10-m DEM tiles from PacIOOS ERDDAP. 
+2. Mosaicked DEM tiles into a single statewide DEM using terra. 
+3. Removed Niʻihau DEM tile errors and cleaned coastline water artifacts. 
+4. Projected DEM to UTM Zone 4N to align with fire-risk and WUI datasets. 
+5. Computed slope raster from DEM (degrees). 
+6. Computed roughness raster from DEM (local elevation variability). 
+7. Applied land/water mask to remove ocean and non-land pixels. 
+8. Clipped rasters to WUI polygons using terra::extract(). 
+9. Calculated mean slope and mean roughness per WUI and exported as shapefile + 
+CSV. 
+Output Products 
+File Name 
+Description 
+slope_hawaii_10m.tif 
+Slope (degrees) statewide at 10 m resolution 
+roughness_hawaii_10m.tif 
+Surface roughness statewide at 10 m resolution 
+WUI_with_Slope.shp 
+WUI polygons with mean slope added 
+WUI_with_Roughness.shp WUI polygons with mean roughness added 
+WUI_Mean_Slope.csv 
+Per-WUI mean slope values 
+6 
+WUI_Mean_Roughness.csv Per-WUI roughness values 
+Data Quality Notes 
+• DEM is high-quality but may contain localized errors (steep cliffs, cloud shadows in 
+source LIDAR mosaics). 
+• Coastlines and small islets may include minor artifacts. 
+• Roughness depends on the 3×3 window; different kernel sizes produce different 
+interpretation scales. 
+• Resampling the DEM to match other raster datasets may slightly smooth the terrain.
