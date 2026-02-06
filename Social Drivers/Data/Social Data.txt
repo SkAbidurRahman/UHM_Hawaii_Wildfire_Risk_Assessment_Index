@@ -1,0 +1,98 @@
+Below is **concise, thesis-ready metadata** for your **ACS Social Drivers → WUI area-weighted dataset**, written in the **same structured style** as your wind metadata.
+
+---
+
+# Social Drivers Metadata (ACS → WUI Area-Weighted)
+
+**Source:**
+U.S. Census Bureau, **American Community Survey (ACS) 5-year Estimates, 2023 release (2019–2023)**
+
+**Access:**
+Downloaded programmatically using the **tidycensus** R package and official Census API.
+
+**Input Data:**
+• Polygon layer: Census **tract geometries** (ACS 5-year, Hawaiʻi)
+• Social variables derived from ACS tables:
+ – Population: total population
+ – Income: median household income
+ – Poverty: percent below poverty line
+ – Employment: percent unemployed
+ – Education: percent < high school; percent bachelor’s+
+ – Disability: percent with disability
+ – Housing: percent renter-occupied
+ – Transportation: percent households without vehicle
+ – Connectivity: percent households without internet
+ – Age structure: percent under age 5; percent age 65+
+
+**Spatial Units:**
+• **Input:** Census tracts (ACS geography)
+• **Output:** **WUI polygons** (*WUI_Polys.shp*), **n = 214 statewide WUI units**
+
+**Coordinate Reference System:**
+• ACS tracts (raw): NAD83 geographic
+• Analysis CRS: **NAD83 / UTM Zone 4N (EPSG:26904)**
+• All layers reprojected to EPSG:26904 prior to intersection and weighting.
+
+---
+
+# Processing Summary
+
+ACS tract-level social variables were first downloaded and cleaned using reproducible R scripts.
+To align social data with wildfire-relevant spatial units, **area-weighted spatial interpolation** was applied:
+
+1. Census tracts and WUI polygons were projected to **UTM Zone 4N**.
+2. **Geometric intersection** was performed to create tract–WUI fragments.
+3. **Area weights** were computed as:
+     intersection area ÷ total WUI polygon area.
+4. **Area-weighted means** of all social variables were calculated for each WUI.
+5. Weighted values were **joined back to WUI polygons**.
+6. Final datasets were exported as **shapefile and CSV** for modeling and mapping.
+
+This approach ensures **spatial comparability** between demographic data and wildfire-analysis units.
+
+---
+
+# Output Products
+
+• **WUI_ACS_Social_AreaWeighted.shp** — WUI polygons with area-weighted social indicators
+• **WUI_ACS_Social_AreaWeighted.csv** — Tabular WUI-level social dataset
+
+**Key Attributes:**
+• total_pop — Area-weighted population estimate
+• med_hh_income — Median household income
+• pct_poverty — Percent below poverty line
+• pct_unemployed — Percent unemployed
+• pct_less_hs — Percent without high school diploma
+• pct_bachelors_plus — Percent bachelor’s degree or higher
+• pct_disability — Percent population with disability
+• pct_renter — Percent renter-occupied housing
+• pct_no_vehicle — Percent households without vehicle
+• pct_no_internet — Percent households without internet
+• pct_under5 — Percent population under age 5
+• pct_65plus — Percent population age 65+
+
+---
+
+# Data Quality Notes
+
+• ACS values are **survey-based estimates** with sampling uncertainty.
+• Census tracts and WUI boundaries **do not spatially align**, requiring interpolation.
+• Area-weighted interpolation **assumes uniform distribution of population within tracts**, which may introduce bias in heterogeneous landscapes.
+• Weighted WUI population totals may differ from statewide ACS totals due to:
+ – Partial tract overlap with WUI boundaries
+ – Coastal/ocean clipping
+ – Spatial interpolation effects
+
+Despite these limitations, the dataset is appropriate for **relative social vulnerability comparison across WUI units**.
+
+---
+
+# Intended Use
+
+Integration of **social vulnerability drivers** into:
+
+• Hawaiʻi Wildfire Risk Assessment Index (WRAI)
+• GLMM wildfire ignition and exposure modeling
+• Multivariate risk analysis and prioritization of fire-prone communities
+• Decision support for **HWMO and land-management partners**
+
