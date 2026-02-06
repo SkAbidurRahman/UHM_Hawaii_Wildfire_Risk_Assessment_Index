@@ -1,0 +1,67 @@
+Drought Exposure (USDM → WUI) Metadata 
+Download Link: https://droughtmonitor.unl.edu/DmData/GISData.aspx 
+Files Used: USDM_YYYYMMDD.shp (2000–2024) 
+Source / Publisher: National Drought Mitigation Center (NDMC), USDA, NOAA, 
+University of Nebraska–Lincoln 
+Format: Shapefile 
+Coverage: Hawaiʻi statewide 
+Temporal Resolution: Weekly 
+Spatial Resolution: Vector polygon 
+CRS: EPSG:4326 (WGS 84) for raw USDM 
+Analysis CRS: EPSG:4326 (WGS 84) 
+Raster Grid: ~0.005° (~500 m) 
+Overview 
+This dataset contains weekly U.S. Drought Monitor (USDM) polygon classifications for 
+Hawaiʻi from 2000–2024. Weekly drought categories (D0–D4) were rasterized to a 
+common grid, converted to drought indicators, summarized as annual drought-week counts, 
+averaged across years, and extracted to Wildland–Urban Interface (WUI) polygons. 
+Attributes 
+DM — Drought category code 
+0 = No drought 
+1 = D0 (Abnormally Dry) 
+2 = D1 (Moderate Drought) 
+3 = D2 (Severe Drought) 
+4 = D3 (Extreme Drought) 
+5 = D4 (Exceptional Drought) 
+Processing Summary / Workflow 
+Download weekly USDM shapefiles (≈4–5 per month). 
+Organize files by year. 
+Rasterize weekly polygons to a ~500 m grid using max(DM) per cell. 
+2 
+Ovewrview 
+This dataset quantifies grass abundance and spatial dominance across Hawaiʻi’s Wildland
+Urban Interface (WUI). Using a spectral unmixed grass product, the analysis calculates the 
+average fractional cover and the total land area where grass constitutes the dominant fuel 
+type (defined as ≥50% cover per pixel). This serves as a proxy for fine fuel continuity in 
+fire risk modeling. 
+Attributes 
+• grass_mean - Average fractional grass cover per WUI unit (0–1 scale). 
+• grass_median - Median fractional grass cover per WUI unit (0–1 scale). 
+• pct_dom_grass - Percentage of WUI area where grass is dominant (pixels > 0.50). 
+Processing Summary / Workflow 
+1. Data Loading: Import statewide WUI polygons (214 units) and 30m fractional grass 
+raster. 
+2. Alignment & Cropping: Project WUI polygons to match raster CRS and crop the raster 
+to the WUI extent. 
+3. Intensity Extraction: Calculate mean and median pixel values (0–1) per WUI polygon 
+to quantify grass density. 
+4. Thresholding: Reclassify pixels into a binary raster ($1 = >50\%$ cover; $0 = \le 
+50\%$ cover) to identify areas of fuel dominance. 
+5. Spatial Aggregation: Calculate the mean of the binary raster per polygon to determine 
+the proportion of grass-dominated area. 
+6. Final Scaling: Convert proportions to percentages (0–100%) and export as .shp and .csv. 
+Output Products 
+Output 
+Description 
+WUI_Grass_Metrics_Final.shp WUI polygons containing mean, median, and dominance 
+WUI_Grass_Summary.csv 
+percentage attributes. 
+Per-WUI tabular summary of grass metrics for statistical 
+analysis. 
+Data Quality Notes 
+⚫ Spectral Unmixing: Values represent sub-pixel fractions; a value of 0.50 means 50% 
+of the 30m pixel is identified as herbaceous fuel. 
+⚫ Fuel Continuity: The 50% threshold is a standard heuristic used to identify where 
+fine fuels are likely continuous enough to support fire spread. 
+⚫ Data Vintage: The raster represents a composite/average of conditions between 2020 
+and 2023.
