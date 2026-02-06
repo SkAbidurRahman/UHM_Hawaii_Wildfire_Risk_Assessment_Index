@@ -1,0 +1,68 @@
+## Grass Cover (Herbaceous/Fine Fuel) — Metadata / Data Statement (WUI-scale)
+
+**Dataset / Variable name(s)**
+
+* `grass_mean` = mean fractional grass cover per WUI (0–1)
+* `grass_median` = median fractional grass cover per WUI (0–1)
+* `pct_dom_grass` = % of WUI area dominated by grass, defined as pixels with **grass > 0.50** (0–100)
+
+---
+
+### Source data
+
+* **Grass raster:** `unmix_grass_2020_2023.tif`
+
+  * Represents **fractional grass cover** per pixel (continuous values typically 0–1).
+  * Time period: **2020–2023 composite** (as implied by filename).
+* **WUI polygons:** `WUI_Polys.shp`
+
+  * 214 statewide WUI units (your analysis units).
+
+---
+
+### Spatial characteristics
+
+* **Geometry:** Raster (grass) + polygon zones (WUI)
+* **Spatial resolution:** inherited from `unmix_grass_2020_2023.tif`
+* **Extent:** Hawaiʻi statewide (final outputs clipped to WUI coverage)
+* **CRS handling:** WUI polygons are **reprojected to match the raster CRS** before extraction (`project(wui, crs(grass))`).
+
+---
+
+### Processing summary (what your code does)
+
+1. **Load** WUI polygons and the grass fractional cover raster.
+2. **Reproject** WUI to the grass raster CRS to prevent misalignment.
+3. **Crop** the grass raster to the WUI extent (efficiency step).
+4. **Zonal statistics (continuous):**
+
+   * Extract **mean** grass cover per WUI → `grass_mean`
+   * Extract **median** grass cover per WUI → `grass_median`
+5. **Dominance thresholding (binary):**
+
+   * Create a binary raster where `grass > 0.50` (dominant grass pixel = 1, else 0).
+   * Extract the **mean of the binary raster** per WUI → proportion of pixels dominated by grass.
+   * Convert to percent → `pct_dom_grass = proportion * 100`
+6. **Export outputs:**
+
+   * Shapefile with appended fields: `WUI_Grass_Metrics_Final.shp`
+   * Tabular summary: `WUI_Grass_Summary.csv`
+
+---
+
+### Outputs (deliverables)
+
+* **Vector (for mapping / ArcGIS):**
+  `C:/UHM/Thesis/Grass_Cover/WUI_Grass_Metrics_Final.shp`
+* **Table (for modeling / QA/QC):**
+  `C:/UHM/Thesis/Grass_Cover/WUI_Grass_Summary.csv`
+
+---
+
+### Data quality notes / interpretation
+
+* `grass_mean` is sensitive to extreme values and mixed pixels; `grass_median` is more robust for skewed distributions.
+* `pct_dom_grass` depends strongly on the chosen threshold (**0.50**). If you change the threshold (e.g., 0.40 or 0.60), document the justification (fuel continuity concept, field knowledge, or literature).
+* Because WUI polygons and raster pixels rarely align perfectly, zonal summaries are **area/pixel-sampling approximations** of true cover within each polygon (still appropriate for WUI-scale comparative analysis).
+
+
