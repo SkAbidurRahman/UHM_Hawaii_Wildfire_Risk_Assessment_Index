@@ -1,0 +1,42 @@
+ Family: nbinom2  ( log )
+Formula:          
+y ~ Wind_mph_z + NDVI_mean_z + mean_ann_rainfall_mm_z + avg_weeks_any_drought_z +  
+    avg_weeks_sev_drought_z + mean_slope_roughness_z + grass_mean_z +  
+    pct_dom_grass_z + Avg_Fuel_Value_z + total_pop_z + med_hh_income_z +  
+    pct_poverty_z + pct_unemployed_z + pct_less_hs_z + pct_bachelors_plus_z +  
+    pct_disability_z + pct_renter_z + pct_no_vehicle_z + pct_no_internet_z +  
+    pct_under5_z + pct_65plus_z + offset(log_area)
+Data: mod
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+    467.2     543.2    -210.6     421.2       178 
+
+
+Dispersion parameter for nbinom2 family (): 2.48 
+
+Conditional model:
+                         Estimate Std. Error z value Pr(>|z|)    
+(Intercept)             -17.13416    0.17749  -96.54  < 2e-16 ***
+Wind_mph_z                0.19625    0.13641    1.44  0.15025    
+NDVI_mean_z               0.08311    0.16639    0.50  0.61742    
+mean_ann_rainfall_mm_z   -1.96942    0.41016   -4.80 1.57e-06 ***
+avg_weeks_any_drought_z  -0.32096    0.26362   -1.22  0.22341    
+avg_weeks_sev_drought_z   0.43537    0.18136    2.40  0.01637 *  
+mean_slope_roughness_z    0.04267    0.17286    0.25  0.80502    
+grass_mean_z             -0.62598    0.38954   -1.61  0.10807    
+pct_dom_grass_z           0.63633    0.37173    1.71  0.08693 .  
+Avg_Fuel_Value_z          0.43512    0.13883    3.13  0.00172 ** 
+total_pop_z              -0.45033    0.17155   -2.63  0.00866 ** 
+med_hh_income_z          -0.35738    0.28245   -1.27  0.20576    
+pct_poverty_z             0.36502    0.24436    1.49  0.13524    
+pct_unemployed_z         -0.08898    0.16141   -0.55  0.58145    
+pct_less_hs_z            -0.23640    0.14323   -1.65  0.09884 .  
+pct_bachelors_plus_z     -0.12992    0.17731   -0.73  0.46372    
+pct_disability_z         -0.10864    0.22920   -0.47  0.63551    
+pct_renter_z             -0.07899    0.14683   -0.54  0.59058    
+pct_no_vehicle_z          0.45520    0.14912    3.05  0.00227 ** 
+pct_no_internet_z        -0.31686    0.17824   -1.78  0.07545 .  
+pct_under5_z              0.22443    0.17479    1.28  0.19914    
+pct_65plus_z             -0.24556    0.25272   -0.97  0.33122    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1

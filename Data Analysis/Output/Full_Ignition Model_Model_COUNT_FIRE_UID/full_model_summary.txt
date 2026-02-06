@@ -1,0 +1,46 @@
+ Family: poisson  ( log )
+Formula:          y ~ wind_mph_z + ndvi_z + rain_mm_z + drought_any_z + drought_sev_z +  
+    slope_rough_z + grass_mean_z + pct_dom_grass_z + fuel_avg_z +  
+    fri_years_z + total_pop_z + med_hh_income_z + pct_poverty_z +  
+    pct_unemployed_z + pct_less_hs_z + pct_bachelors_plus_z +  
+    pct_disability_z + pct_renter_z + pct_no_vehicle_z + pct_no_internet_z +  
+    pct_under5_z + pct_65plus_z + (1 | obs_id)
+Data: mod
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+    259.2     315.5    -105.6     211.2        53 
+
+Random effects:
+
+Conditional model:
+ Groups Name        Variance  Std.Dev. 
+ obs_id (Intercept) 1.607e-10 1.268e-05
+Number of obs: 77, groups:  obs_id, 77
+
+Conditional model:
+                      Estimate Std. Error z value Pr(>|z|)    
+(Intercept)           0.695463   0.090942   7.647 2.05e-14 ***
+wind_mph_z            0.010602   0.099515   0.107    0.915    
+ndvi_z               -0.051387   0.147446  -0.349    0.727    
+rain_mm_z             0.007449   0.230570   0.032    0.974    
+drought_any_z         0.077389   0.230477   0.336    0.737    
+drought_sev_z        -0.006911   0.176489  -0.039    0.969    
+slope_rough_z         0.047227   0.109140   0.433    0.665    
+grass_mean_z         -0.022962   0.271985  -0.084    0.933    
+pct_dom_grass_z      -0.051671   0.252539  -0.205    0.838    
+fuel_avg_z           -0.038241   0.111632  -0.343    0.732    
+fri_years_z          -0.722242   0.130118  -5.551 2.85e-08 ***
+total_pop_z          -0.039562   0.107221  -0.369    0.712    
+med_hh_income_z       0.139088   0.215107   0.647    0.518    
+pct_poverty_z         0.168933   0.166473   1.015    0.310    
+pct_unemployed_z      0.074954   0.153778   0.487    0.626    
+pct_less_hs_z         0.050877   0.111428   0.457    0.648    
+pct_bachelors_plus_z -0.078001   0.144865  -0.538    0.590    
+pct_disability_z      0.007644   0.184085   0.042    0.967    
+pct_renter_z         -0.028002   0.134001  -0.209    0.834    
+pct_no_vehicle_z     -0.058865   0.128884  -0.457    0.648    
+pct_no_internet_z     0.068322   0.130765   0.522    0.601    
+pct_under5_z          0.071546   0.166541   0.430    0.667    
+pct_65plus_z          0.055393   0.205821   0.269    0.788    
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
