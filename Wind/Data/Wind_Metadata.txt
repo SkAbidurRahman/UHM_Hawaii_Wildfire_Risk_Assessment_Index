@@ -1,0 +1,35 @@
+Source: Global Wind Atlas v3 (World Bank Group; DTU Wind Energy) 
+Access: https://globalwindatlas.info/api/gis/country/USA/wind-speed/10 
+Input Data: 
+• Raster: USA_wind-speed_10m.tif 
+• Height: 10 m above ground 
+• Units: meters per second (m/s) 
+• Spatial resolution: ~250 m 
+• Temporal representation: Long-term climatological mean 
+Spatial Units: 
+• WUI polygons (WUI_Polys.shp), n = 214 statewide WUI units 
+Coordinate Reference System: 
+12 
+• Raster CRS: WGS 84 (EPSG:4326) 
+• WUI polygons were reprojected to match the raster CRS prior to analysis. 
+Processing Summary 
+The national 10 m wind speed raster was cropped to the Hawaiian Islands using the bounding 
+extent of the statewide WUI polygons to improve processing efficiency. The cropped raster 
+was then masked to the WUI boundaries to retain wind values only within WUI areas. Mean 
+wind speed was extracted for each WUI polygon using zonal statistics, excluding NoData 
+values. Extracted values were joined back to the WUI attribute table and exported as both a 
+shapefile and CSV. Wind speed was retained in meters per second and additionally converted 
+to miles per hour for interpretability. 
+Output Products 
+• Statewide_WUI_Wind_Final.shp — WUI polygons with mean wind speed attributes 
+• Statewide_WUI_Wind_Final.csv — Tabular WUI-level wind speed dataset 
+Key Attributes: 
+• Wind_ms — Mean 10 m wind speed (m/s) 
+• Wind_mph — Mean 10 m wind speed (mph) 
+Data Quality Notes 
+Wind speed values represent long-term average conditions rather than event-scale winds. The 
+dataset does not capture short-term gusts or extreme wind events but is appropriate for relative 
+wildfire risk assessment and WUI-scale comparative analysis. 
+Intended Use 
+Fire environment characterization and inclusion as a meteorological predictor in the Hawaiʻi 
+Wildfire Risk Assessment Index (WRAI), GLMM modeling, and multivariate analyses.
