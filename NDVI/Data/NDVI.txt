@@ -1,0 +1,83 @@
+Download Source: Hawaiʻi Climate Data Portal (HCDP), MODIS NDVI product 
+https://www.hawaii.edu/climate-data-portal/data-portal/ 
+Example file: ndvi_modis_day_statewide_data_map_2001_01_01.tif 
+Format: GeoTIFF 
+Coverage: Hawaiʻi statewide 
+Temporal Resolution: Daily (native), aggregated to monthly and annual 
+Spatial Resolution: Native HCDP MODIS NDVI grid (~MODIS-scale, sub-km; see HCDP 
+metadata) 
+CRS: 
+Original NDVI GeoTIFFs: WGS 84 (EPSG:4326) 
+Reprojected for analysis and WUI extraction to: NAD83 / UTM Zone 4N (EPSG:26904) 
+Overview 
+This dataset contains daily MODIS-based NDVI (Normalized Difference Vegetation Index) 
+rasters for the Hawaiian Islands, obtained from the Hawaiʻi Climate Data Portal (HCDP) for 
+the period 2000–2025. NDVI is a dimensionless index derived from red and near-infrared 
+reflectance that ranges approximately from −1 to +1, where higher values indicate denser and 
+more photosynthetically active vegetation. The daily NDVI rasters were processed to produce 
+monthly NDVI stacks, annual mean NDVI rasters, and a multi-year NDVI stack for use in 
+wildfire exposure and WUI vulnerability analysis. 
+7 
+Key Attribute 
+NDVI 
+Variable name in rasters: NDVI band (single-band GeoTIFF) 
+Units: unitless index (approximately −1 to +1) 
+Interpretation: 
+< 0: water, clouds, non-vegetated noise 
+0–0.2: bare soil, sparse or senescent vegetation 
+0.2–0.5: grassland, shrubs, mixed cover 
+0.5: dense, healthy vegetation 
+Processing Summary / Workflow 
+1. Daily NDVI acquisition: 
+Daily statewide NDVI rasters were downloaded from HCDP for each year (e.g., 
+ndvi_modis_day_statewide_data_map_YYYY_MM_DD.tif). 
+2. Monthly NDVI stacks: 
+For each month, all valid daily NDVI rasters were loaded using terra (rast()), quality-checked, 
+and stacked into a multi-layer raster (NDVI_Monthly_Stack_YYYY_MM.tif). Only existing 
+and readable daily files were included. 
+3. Annual mean NDVI: 
+For each year, the 12 monthly stacks (or all available months) were loaded, merged into an 
+annual stack, and the mean NDVI was computed across all monthly layers using app(..., mean, 
+na.rm = TRUE). 
+Output: NDVI_Annual_Mean_YYYY.tif. 
+4. Multi-year annual NDVI stack (time series): 
+All annual mean rasters from 2001–2025 were combined into a multi-band raster 
+(NDVI_Annual_Stack_2001_2025.tif) to support time-series analysis and long-term 
+vegetation trends. 
+5. NDVI-based adjacency / continuity index: 
+Annual NDVI was further thresholded to identify “vegetated” pixels (e.g., NDVI > 0.25 → 1, 
+else 0), and a 3×3 focal window was used to calculate a local adjacency index (number of 
+vegetated neighbors per cell). This produced a continuous NDVI adjacency index raster 
+indicating local fuel continuity. 
+6. WUI extraction: 
+Wildland–Urban Interface (WUI) polygons were reprojected to match the NDVI raster CRS. 
+Mean annual NDVI and the NDVI adjacency index were extracted per WUI polygon using 
+terra::extract(..., fun = mean, na.rm = TRUE), and appended back to the WUI shapefile as new 
+attributes. 
+8 
+Output Products 
+File Name 
+Description 
+NDVI_Monthly_Stack_YYYY_MM.tif Daily NDVI stacked for each month (multi
+layer) 
+NDVI_Annual_Mean_YYYY.tif 
+Mean annual NDVI raster per year 
+NDVI_Annual_Stack_2001_2025.tif 
+Multi-band stack of annual mean NDVI (time 
+series) 
+NDVI_Adjacency_Index.tif 
+NDVI-based adjacency/continuity index raster 
+WUI_with_Annual_NDVI.shp 
+WUI polygons with mean annual NDVI attribute 
+WUI_with_Adjacency_Index.shp 
+WUI polygons with NDVI adjacency index 
+attribute 
+Data Quality Notes 
+• NDVI values are derived from MODIS satellite observations processed by HCDP and are 
+subject to cloud cover, atmospheric effects, and sensor noise. 
+• Daily data gaps (e.g., persistent cloud cover) and missing daily files may reduce the number 
+of valid observations in some months; averaging is done with na.rm = TRUE to minimize bias. 
+• Aggregation from daily → monthly → annual smooths short-term variability and emphasizes 
+long-term vegetation condition. 
+• Thresholds (e.g., NDVI > 0.25 for “vegetated”) are analytical choices and should be 
+interpreted in the context of Hawaiʻi’s vegetation types and fuel models. 
