@@ -90,12 +90,15 @@ if (length(missing) > 0) {
 }
 
 # IMPORTANT SWITCH (LEAKAGE CHECK)
+# leakage in this case, giving the model information that would otherwise not be available at 
+#the time of prediction?
+#because later on you still have this variable in both of your models?
 USE_FREQ_PERYR <- TRUE  
 
 
 # MODELING DATAFRAME
 mod <- data.frame(
-  y       = as.integer(dat$COUNT_FIRE_UID),
+  y       = as.integer(dat$COUNT_FIRE_UID),#Turns this into your response variable, just the number of fires per year/WUI. Lots of NAs
   WUI_ID  = dat$WUI_Riskar,
   
   # Fire environment / fuels
@@ -111,7 +114,7 @@ mod <- data.frame(
   
   # Fire regime metrics
   fri_years  = as.numeric(dat$FRI_years),
-  freq_peryr = as.numeric(dat$Freq_perYr),
+  freq_peryr = as.numeric(dat$Freq_perYr),# we are saying this is a no go beacuse of leakage?
   
   # Social drivers 
   total_pop        = as.numeric(dat$total_pop),
@@ -135,17 +138,25 @@ if (!USE_FREQ_PERYR) {
 
 # Drop missing values
 mod <- na.omit(mod)
-cat("Rows after NA removal:", nrow(mod), "\n")
+cat("Rows after NA removal:", nrow(mod), "\n")# this removes all of the NAs which pulls 49 rows straight out of your model
+#if you do not want this you need to at least change the mod$y to zeros otherwise you are not accounting for 
+#Wuis that have no fires which I think is kind of important information. In this case 0 does tell us something
 
 
 # SCALE PREDICTORS (mean=0, sd=1)
+# this subtracts the mean and divided by the standard deviation to "scale" the model
+#but what about values that are already between 0-1 will they be changed as well?
+# you may end up with some strange values?
 pred_cols <- setdiff(names(mod), c("y", "WUI_ID"))
 
 for (nm in pred_cols) {
   mod[[paste0(nm, "_z")]] <- as.numeric(scale(mod[[nm]]))
 }
+#Grassmean_z becomes negative due to the "scaling". Are you scaling numbers that do not need to be scaled?
+
 
 # CORRELATION + HEATMAP + PAIRS
+##NDVI is negatively correlated to drought? -0.15127548, -0.19590206, is that reasonable?
 predictors <- mod[, pred_cols]
 cor_matrix <- cor(predictors, use = "complete.obs")
 write.csv(cor_matrix, cor_csv, row.names = TRUE)
@@ -201,9 +212,29 @@ form_full   <- as.formula(paste("y ~", fixed_part, "+ (1|obs_id)"))
 
 m_null <- glmmTMB(y ~ 1 + (1|obs_id), family = poisson(), data = mod)
 m_full <- glmmTMB(form_full, family = poisson(), data = mod)
+#This looks like 
+#y ~ wind_mph_z + ndvi_z + rain_mm_z + drought_any_z + drought_sev_z + 
+# slope_rough_z + grass_mean_z + pct_dom_grass_z + fuel_avg_z + 
+#   fri_years_z + freq_peryr_z + total_pop_z + med_hh_income_z + 
+#   pct_poverty_z + pct_unemployed_z + pct_less_hs_z + pct_bachelors_plus_z + 
+#   pct_disability_z + pct_renter_z + pct_no_vehicle_z + pct_no_internet_z + 
+#   pct_under5_z + pct_65plus_z + (1 | obs_id)
+#while your code is very elegant it may be helpful to see what values are actually going into your model at this time
+
+#Tester no "social variables"
+m_nosocial<-glmmTMB(y ~ wind_mph_z + ndvi_z + rain_mm_z + drought_any_z + drought_sev_z + 
+                       slope_rough_z + grass_mean_z + pct_dom_grass_z + fuel_avg_z + 
+                        fri_years_z + freq_peryr_z+ (1 | obs_id), family = poisson(), data = mod)
 
 cat("\nAIC comparison:\n")
 print(AIC(m_null, m_full))
+#print(AIC(m_null, m_full, m_nosocial)), whe I ran this I got this output
+#        df      AIC
+#m_null      2 206.5414
+#m_full     25 184.5709
+#m_nosocial 13 160.8308
+
+#basically excluding the social variables runs a far better model probably because of the introduction of overfitting and noise etc
 
 # Save coefficients (Relative Risk = exp(beta))
 coef_table <- as.data.frame(summary(m_full)$coefficients$cond)
@@ -212,10 +243,20 @@ write.csv(coef_table, coef_csv, row.names = TRUE)
 
 sink(model_txt)
 print(summary(m_full))
+#Fire frequency per year &fir_years_z which is also an odd value is still in your data set and ends up being the most significant item. This is a bit of a problem because 
+#obviously those 2 items will define fire behavior. It may be wise to take them out?
 sink()
+
+#Test model with no fire variables
+m_nosocial_nofire<-glmmTMB(y ~ wind_mph_z + ndvi_z + rain_mm_z + drought_any_z + drought_sev_z + 
+                      slope_rough_z + grass_mean_z + pct_dom_grass_z + fuel_avg_z + 
+                      (1 | obs_id), family = poisson(), data = mod)
+
+#it still tests better than the null but not by much
 
 
 # PREDICT + WUI SUMMARY
+#I actually think having a prediction may end up being valuable but I will defer to Clay on this one
 mod$pred <- predict(m_full, newdata = mod, type = "response")
 
 wui_summary <- mod %>%
@@ -275,4 +316,5 @@ if (file.exists(wui_shp_path) && file.exists(ref_rast_path)) {
 
 cat("\nDONE. Outputs in:", out_dir, "\n")
 plot(wui_tif_out)
+
 
